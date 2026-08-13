@@ -1,0 +1,18 @@
+.booking-reference {
+    margin-bottom: 15px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #edf0f4;
+
+    font-size: 11px;
+}
+
+.booking-reference span {
+    color: #98a2b3;
+}
+
+.booking-reference strong {
+    color: #667085;
+    margin-left: 5px;
+}
