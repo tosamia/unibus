@@ -1,12 +1,6 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| UPCOMING TRIP DATA
-|--------------------------------------------------------------------------
-| For now these are sample values.
-| Later Samia's backend can get these values from MySQL.
-*/
+
 
 $tripDate = "2026-08-15";
 $tripDateFormatted = date("M d, Y", strtotime($tripDate));
@@ -108,7 +102,7 @@ $bookingStatus = "Confirmed";
 
 
         <h1>
-            Welcome back,!!! 👋
+            Welcome back!!! 👋
         </h1>
 
 
