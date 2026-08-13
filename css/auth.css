@@ -195,3 +195,68 @@
 
     text-decoration: none;
 }
+
+/* =========================
+   REGISTER PAGE
+========================= */
+
+.register-card {
+    max-width: 480px;
+}
+
+
+/* SELECT BOX */
+
+.form-group select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 14px;
+
+    border: 1px solid #d9e0e8;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    background: white;
+
+    color: #667085;
+
+    outline: none;
+}
+
+
+.form-group select:focus {
+    border-color: #1769e0;
+
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.1);
+}
+
+
+/* TERMS */
+
+.register-terms {
+    margin: 5px 0 22px;
+
+    font-size: 13px;
+
+    color: #667085;
+}
+
+
+.register-terms label {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+    line-height: 1.5;
+}
+
+
+.register-terms input {
+    margin-top: 3px;
+}
