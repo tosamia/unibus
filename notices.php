@@ -1,69 +1,170 @@
+<?php
+
+require_once "config/database.php";
+
+$sql = "SELECT id, title, message, created_at
+        FROM notices
+        ORDER BY created_at DESC";
+
+$result = $conn->query($sql);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Notices | UniBus</title>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/notices.css">
+
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
 
-        <div class="logo">
-            🚌 UniBus
-        </div>
+<!-- NAVBAR -->
 
-        <div class="nav-links">
-            <a href="index.php">Home</a>
-            <a href="about.php">About</a>
-            <a href="schedule.php">Bus Schedule</a>
-            <a href="notices.php" class="active">Notices</a>
-            <a href="contact.php">Contact</a>
-        </div>
+<nav class="navbar">
 
-        <div class="nav-buttons">
-            <a href="login.php" class="login-btn">Login</a>
-            <a href="register.php" class="register-btn">Register</a>
-        </div>
+    <div class="logo">
+        🚌 UniBus
+    </div>
 
-    </nav>
+    <div class="nav-links">
 
+        <a href="index.php">
+            Home
+        </a>
 
-    <!-- PAGE HEADER -->
+        <a href="about.php">
+            About
+        </a>
 
-    <section class="notices-header">
+        <a href="schedule.php">
+            Bus Schedule
+        </a>
 
-        <span class="section-label">
-            NOTICES & UPDATES
-        </span>
+        <a href="notices.php" class="active">
+            Notices
+        </a>
 
-        <h1>
-            Latest Bus Notices
-        </h1>
+        <a href="contact.php">
+            Contact
+        </a>
 
-        <p>
-            Stay updated with important announcements,
-            schedule changes, and transportation information.
-        </p>
+    </div>
 
-    </section>
+    <div class="nav-buttons">
 
+        <a href="login.php" class="login-btn">
+            Login
+        </a>
 
-    <!-- NOTICES -->
+        <a href="register.php" class="register-btn">
+            Register
+        </a>
 
-    <section class="notices-section">
+    </div>
 
-        <div class="notices-container">
+</nav>
 
 
-            <!-- NOTICE 1 -->
+<!-- PAGE HEADER -->
+
+<section class="notices-header">
+
+    <span class="section-label">
+        NOTICES & UPDATES
+    </span>
+
+    <h1>
+        Latest Bus Notices
+    </h1>
+
+    <p>
+        Stay updated with important announcements,
+        schedule changes, and transportation information.
+    </p>
+
+</section>
+
+
+<!-- NOTICES -->
+
+<section class="notices-section">
+
+    <div class="notices-container">
+
+
+        <?php if ($result && $result->num_rows > 0): ?>
+
+
+            <?php while ($notice = $result->fetch_assoc()): ?>
+
+                <div class="notice-card">
+
+                    <div class="notice-icon">
+                        📢
+                    </div>
+
+                    <div class="notice-content">
+
+                        <div class="notice-top">
+
+                            <span class="notice-category important">
+                                Notice
+                            </span>
+
+                            <span class="notice-date">
+
+                                <?= date(
+                                    "F d, Y",
+                                    strtotime($notice["created_at"])
+                                ) ?>
+
+                            </span>
+
+                        </div>
+
+
+                        <h2>
+
+                            <?= htmlspecialchars(
+                                $notice["title"]
+                            ) ?>
+
+                        </h2>
+
+
+                        <p>
+
+                            <?= nl2br(
+                                htmlspecialchars(
+                                    $notice["message"]
+                                )
+                            ) ?>
+
+                        </p>
+
+
+                    </div>
+
+                </div>
+
+            <?php endwhile; ?>
+
+
+        <?php else: ?>
+
 
             <div class="notice-card">
 
@@ -73,214 +174,112 @@
 
                 <div class="notice-content">
 
-                    <div class="notice-top">
-
-                        <span class="notice-category important">
-                            Important
-                        </span>
-
-                        <span class="notice-date">
-                            August 14, 2026
-                        </span>
-
-                    </div>
-
                     <h2>
-                        Bus Schedule Update
+                        No Notices Available
                     </h2>
 
                     <p>
-                        Students are requested to check the updated
-                        bus schedule before making a reservation.
-                        Some departure times may have changed.
+                        There are currently no announcements.
+                        Please check again later.
                     </p>
 
-                    <a href="#" class="read-more">
-                        Read More →
-                    </a>
-
                 </div>
 
             </div>
 
 
-            <!-- NOTICE 2 -->
-
-            <div class="notice-card">
-
-                <div class="notice-icon">
-                    🚌
-                </div>
-
-                <div class="notice-content">
-
-                    <div class="notice-top">
-
-                        <span class="notice-category">
-                            Schedule
-                        </span>
-
-                        <span class="notice-date">
-                            August 12, 2026
-                        </span>
-
-                    </div>
-
-                    <h2>
-                        Morning Bus Service
-                    </h2>
-
-                    <p>
-                        Morning buses will operate according to
-                        the regular university schedule. Students
-                        should arrive at their pickup points early.
-                    </p>
-
-                    <a href="#" class="read-more">
-                        Read More →
-                    </a>
-
-                </div>
-
-            </div>
+        <?php endif; ?>
 
 
-            <!-- NOTICE 3 -->
+    </div>
 
-            <div class="notice-card">
-
-                <div class="notice-icon">
-                    🔔
-                </div>
-
-                <div class="notice-content">
-
-                    <div class="notice-top">
-
-                        <span class="notice-category">
-                            General
-                        </span>
-
-                        <span class="notice-date">
-                            August 10, 2026
-                        </span>
-
-                    </div>
-
-                    <h2>
-                        Seat Booking Reminder
-                    </h2>
-
-                    <p>
-                        Students are reminded to book their seats
-                        before travelling and to cancel reservations
-                        they no longer need.
-                    </p>
-
-                    <a href="#" class="read-more">
-                        Read More →
-                    </a>
-
-                </div>
-
-            </div>
+</section>
 
 
-            <!-- NOTICE 4 -->
+<!-- FOOTER -->
 
-            <div class="notice-card">
+<footer class="footer">
 
-                <div class="notice-icon">
-                    ⚠️
-                </div>
-
-                <div class="notice-content">
-
-                    <div class="notice-top">
-
-                        <span class="notice-category warning">
-                            Reminder
-                        </span>
-
-                        <span class="notice-date">
-                            August 8, 2026
-                        </span>
-
-                    </div>
-
-                    <h2>
-                        Be on Time for Departure
-                    </h2>
-
-                    <p>
-                        Students should arrive at the designated
-                        pickup point at least a few minutes before
-                        the scheduled departure time.
-                    </p>
-
-                    <a href="#" class="read-more">
-                        Read More →
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
+    <div class="footer-content">
 
 
-    <!-- FOOTER -->
+        <div>
 
-    <footer class="footer">
+            <h3>
+                🚌 UniBus
+            </h3>
 
-        <div class="footer-content">
-
-            <div>
-
-                <h3>🚌 UniBus</h3>
-
-                <p>
-                    University Bus Booking and Management System
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <h3>Quick Links</h3>
-
-                <a href="index.php">Home</a>
-                <a href="about.php">About</a>
-                <a href="schedule.php">Bus Schedule</a>
-                <a href="notices.php">Notices</a>
-
-            </div>
-
-
-            <div>
-
-                <h3>Contact Info</h3>
-
-                <p>📞 +880 1712-345678</p>
-                <p>✉ info@unibus.sec.edu.bd</p>
-                <p>📍 Sylhet Engineering College</p>
-
-            </div>
+            <p>
+                University Bus Booking and Management System
+            </p>
 
         </div>
 
 
-        <div class="footer-bottom">
+        <div>
 
-            © 2026 UniBus. All rights reserved.
+            <h3>
+                Quick Links
+            </h3>
+
+            <a href="index.php">
+                Home
+            </a>
+
+            <a href="about.php">
+                About
+            </a>
+
+            <a href="schedule.php">
+                Bus Schedule
+            </a>
+
+            <a href="notices.php">
+                Notices
+            </a>
 
         </div>
 
-    </footer>
+
+        <div>
+
+            <h3>
+                Contact Info
+            </h3>
+
+            <p>
+                📞 +880 1712-345678
+            </p>
+
+            <p>
+                ✉ info@unibus.sec.edu.bd
+            </p>
+
+            <p>
+                📍 Sylhet Engineering College
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 UniBus. All rights reserved.
+
+    </div>
+
+</footer>
+
 
 </body>
 
 </html>
+
+<?php
+
+$conn->close();
+
+?>

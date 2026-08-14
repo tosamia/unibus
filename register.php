@@ -1,3 +1,87 @@
+```php
+<?php
+session_start();
+
+require_once "config/database.php";
+
+$message = "";
+$message_type = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $name = trim($_POST["name"] ?? "");
+    $student_id = trim($_POST["student_id"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $department = trim($_POST["department"] ?? "");
+    $password = $_POST["password"] ?? "";
+    $confirm_password = $_POST["confirm_password"] ?? "";
+
+    // Check passwords
+    if ($password !== $confirm_password) {
+
+        $message = "Passwords do not match.";
+        $message_type = "error";
+
+    } else {
+
+        // Check whether email or student ID already exists
+        $check = $conn->prepare(
+            "SELECT id FROM users WHERE email = ? OR student_id = ?"
+        );
+
+        $check->bind_param("ss", $email, $student_id);
+        $check->execute();
+
+        $result = $check->get_result();
+
+        if ($result->num_rows > 0) {
+
+            $message = "Email or Student ID already exists.";
+            $message_type = "error";
+
+        } else {
+
+            // Securely hash password
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // New students are registered as student
+            $role = "student";
+
+            $stmt = $conn->prepare(
+                "INSERT INTO users
+                (name, student_id, department, email, password, role)
+                VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            $stmt->bind_param(
+                "ssssss",
+                $name,
+                $student_id,
+                $department,
+                $email,
+                $hashed_password,
+                $role
+            );
+
+            if ($stmt->execute()) {
+
+                header("Location: login.php?registered=1");
+                exit;
+
+            } else {
+
+                $message = "Registration failed. Please try again.";
+                $message_type = "error";
+            }
+
+            $stmt->close();
+        }
+
+        $check->close();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -52,8 +136,16 @@
                 Register for your UniBus account
             </p>
 
+            <?php if ($message): ?>
 
-            <form>
+                <div class="auth-message <?= htmlspecialchars($message_type) ?>">
+                    <?= htmlspecialchars($message) ?>
+                </div>
+
+            <?php endif; ?>
+
+
+            <form action="register.php" method="POST">
 
                 <!-- FULL NAME -->
 
@@ -66,6 +158,7 @@
                     <input
                         type="text"
                         id="name"
+                        name="name"
                         placeholder="Enter your full name"
                         required
                     >
@@ -84,6 +177,7 @@
                     <input
                         type="text"
                         id="student_id"
+                        name="student_id"
                         placeholder="Enter your student ID"
                         required
                     >
@@ -102,6 +196,7 @@
                     <input
                         type="email"
                         id="email"
+                        name="email"
                         placeholder="Enter your email"
                         required
                     >
@@ -117,7 +212,7 @@
                         Department
                     </label>
 
-                    <select id="department" required>
+                    <select id="department" name="department" required>
 
                         <option value="">
                             Select your department
@@ -159,6 +254,7 @@
                     <input
                         type="password"
                         id="password"
+                        name="password"
                         placeholder="Create a password"
                         required
                     >
@@ -177,6 +273,7 @@
                     <input
                         type="password"
                         id="confirm_password"
+                        name="confirm_password"
                         placeholder="Confirm your password"
                         required
                     >
@@ -276,3 +373,4 @@
 </body>
 
 </html>
+```

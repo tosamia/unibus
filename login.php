@@ -1,14 +1,121 @@
+<?php
+
+session_start();
+
+require_once "config/database.php";
+
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = trim($_POST["email"] ?? "");
+    $password = $_POST["password"] ?? "";
+    $role = $_POST["role"] ?? "";
+
+    if ($email === "" || $password === "" || $role === "") {
+
+        $error = "Please fill in all fields.";
+
+    } else {
+
+        $stmt = $conn->prepare(
+            "SELECT id, name, student_id, department, email, password, role
+             FROM users
+             WHERE email = ? AND role = ?
+             LIMIT 1"
+        );
+
+        if (!$stmt) {
+
+            $error = "Database error. Please try again.";
+
+        } else {
+
+            $stmt->bind_param("ss", $email, $role);
+
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+
+            if ($result->num_rows === 1) {
+
+                $user = $result->fetch_assoc();
+
+                if (password_verify($password, $user["password"])) {
+
+                    // Clear old session data
+                    session_regenerate_id(true);
+
+                    // Save user information
+                    $_SESSION["user_id"] = $user["id"];
+                    $_SESSION["name"] = $user["name"];
+                    $_SESSION["student_id"] = $user["student_id"];
+                    $_SESSION["department"] = $user["department"];
+                    $_SESSION["email"] = $user["email"];
+                    $_SESSION["role"] = $user["role"];
+
+                    // Redirect according to role
+
+                    if ($user["role"] === "student") {
+
+                        header("Location: student-dashboard.php");
+                        exit;
+
+                    }
+
+                    if ($user["role"] === "driver") {
+
+                        header("Location: driver/driver-dashboard.php");
+                        exit;
+
+                    }
+
+                    if ($user["role"] === "admin") {
+
+                        header("Location: admin/admin-dashboard.php");
+                        exit;
+
+                    }
+
+                    $error = "Invalid account role.";
+
+                } else {
+
+                    $error = "Incorrect password.";
+
+                }
+
+            } else {
+
+                $error = "No account found with this email and selected role.";
+
+            }
+
+            $stmt->close();
+        }
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Login | UniBus</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
 </head>
 
@@ -18,12 +125,9 @@
 
     <div class="auth-card">
 
-        <!-- LOGO -->
-
         <div class="auth-logo">
             🚌 UniBus
         </div>
-
 
         <h1>Welcome Back</h1>
 
@@ -32,13 +136,38 @@
         </p>
 
 
-        <form action="#" method="POST">
+        <?php if ($error !== ""): ?>
 
-            <!-- ROLE -->
+            <div class="login-error">
+
+                <?php echo htmlspecialchars($error); ?>
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <?php if (isset($_GET["registered"])): ?>
+
+            <div class="login-success">
+
+                Registration successful!
+                Please login.
+
+            </div>
+
+        <?php endif; ?>
+
+
+        <form
+            action="login.php"
+            method="POST"
+        >
 
             <label>
                 Login As
             </label>
+
 
             <div class="role-options">
 
@@ -73,7 +202,7 @@
                     >
 
                     <span>
-                        🧑 Driver
+                        🧑‍✈️ Driver
                     </span>
 
                 </label>
@@ -99,8 +228,6 @@
             </div>
 
 
-            <!-- EMAIL -->
-
             <label for="email">
                 Email
             </label>
@@ -113,8 +240,6 @@
                 required
             >
 
-
-            <!-- PASSWORD -->
 
             <label for="password">
                 Password
@@ -129,8 +254,6 @@
             >
 
 
-            <!-- LOGIN -->
-
             <button
                 type="submit"
                 class="auth-button"
@@ -140,8 +263,6 @@
 
         </form>
 
-
-        <!-- REGISTER AREA -->
 
         <div
             class="register-area"
@@ -153,7 +274,7 @@
             </p>
 
             <a
-                href="registerr.php"
+                href="register.php"
                 id="registerLink"
             >
                 Register as Student
@@ -161,8 +282,6 @@
 
         </div>
 
-
-        <!-- BACK -->
 
         <a
             href="index.php"
@@ -186,32 +305,23 @@ function updateRegister() {
         ).value;
 
     const registerArea =
-        document.getElementById(
-            "registerArea"
-        );
+        document.getElementById("registerArea");
 
     const registerLink =
-        document.getElementById(
-            "registerLink"
-        );
+        document.getElementById("registerLink");
 
-
-    // STUDENT
 
     if (selectedRole === "student") {
 
         registerArea.style.display = "block";
 
-        registerLink.href =
-            "register.php";
+        registerLink.href = "register.php";
 
         registerLink.textContent =
             "Register as Student";
 
     }
 
-
-    // DRIVER
 
     else if (selectedRole === "driver") {
 
@@ -225,8 +335,6 @@ function updateRegister() {
 
     }
 
-
-    // ADMIN
 
     else if (selectedRole === "admin") {
 

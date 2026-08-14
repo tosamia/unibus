@@ -1,15 +1,85 @@
 <?php
 
-// Sample student data
-// Later these values will come from MySQL.
+session_start();
 
-$studentName = "Samia Saifa";
-$studentId = "SEC-12345";
-$department = "Computer Science";
-$email = "samia@example.com";
-$phone = "+880 1712-345678";
-$semester = "8th Semester";
-$session = "2022-2023";
+require_once "config/database.php";
+
+/*
+|--------------------------------------------------------------------------
+| CHECK LOGIN
+|--------------------------------------------------------------------------
+*/
+
+if (!isset($_SESSION["user_id"])) {
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION["user_id"];
+
+
+/*
+|--------------------------------------------------------------------------
+| GET LOGGED-IN USER
+|--------------------------------------------------------------------------
+*/
+
+$stmt = $conn->prepare("
+    SELECT
+        id,
+        name,
+        student_id,
+        department,
+        email,
+        role,
+        created_at
+    FROM users
+    WHERE id = ?
+");
+
+if (!$stmt) {
+    die("Profile query failed: " . $conn->error);
+}
+
+$stmt->bind_param("i", $user_id);
+
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+if ($result->num_rows !== 1) {
+
+    session_destroy();
+
+    header("Location: login.php");
+    exit;
+}
+
+$user = $result->fetch_assoc();
+
+$stmt->close();
+
+
+/*
+|--------------------------------------------------------------------------
+| USER DATA
+|--------------------------------------------------------------------------
+*/
+
+$studentName = $user["name"];
+
+$studentId = $user["student_id"] ?? "Not provided";
+
+$department = $user["department"] ?? "Not provided";
+
+$email = $user["email"];
+
+$role = ucfirst($user["role"]);
+
+$accountCreated = date(
+    "M d, Y",
+    strtotime($user["created_at"])
+);
 
 ?>
 
@@ -20,13 +90,22 @@ $session = "2022-2023";
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>My Profile | UniBus</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
-    <link rel="stylesheet" href="css/profile.css">
+    <link
+        rel="stylesheet"
+        href="css/profile.css"
+    >
 
 </head>
 
@@ -67,11 +146,17 @@ $session = "2022-2023";
 
     <div class="nav-buttons">
 
-        <a href="profile.php" class="profile-btn">
+        <a
+            href="profile.php"
+            class="profile-btn"
+        >
             👤 Profile
         </a>
 
-        <a href="login.php" class="logout-btn">
+        <a
+            href="logout.php"
+            class="logout-btn"
+        >
             Logout
         </a>
 
@@ -133,12 +218,12 @@ $session = "2022-2023";
                 <div class="profile-name">
 
                     <h2>
-                        <?php echo htmlspecialchars($studentName); ?>
+                        <?= htmlspecialchars($studentName); ?>
                     </h2>
 
                     <p>
                         Student ID:
-                        <?php echo htmlspecialchars($studentId); ?>
+                        <?= htmlspecialchars($studentId); ?>
                     </p>
 
                     <span class="student-status">
@@ -182,7 +267,7 @@ $session = "2022-2023";
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($studentName); ?>
+                            <?= htmlspecialchars($studentName); ?>
                         </strong>
 
                     </div>
@@ -195,7 +280,7 @@ $session = "2022-2023";
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($studentId); ?>
+                            <?= htmlspecialchars($studentId); ?>
                         </strong>
 
                     </div>
@@ -208,7 +293,7 @@ $session = "2022-2023";
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($email); ?>
+                            <?= htmlspecialchars($email); ?>
                         </strong>
 
                     </div>
@@ -217,11 +302,11 @@ $session = "2022-2023";
                     <div class="info-item">
 
                         <span>
-                            Phone Number
+                            Department
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($phone); ?>
+                            <?= htmlspecialchars($department); ?>
                         </strong>
 
                     </div>
@@ -263,7 +348,7 @@ $session = "2022-2023";
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($department); ?>
+                            <?= htmlspecialchars($department); ?>
                         </strong>
 
                     </div>
@@ -272,24 +357,11 @@ $session = "2022-2023";
                     <div class="info-item">
 
                         <span>
-                            Semester
+                            Student ID
                         </span>
 
                         <strong>
-                            <?php echo htmlspecialchars($semester); ?>
-                        </strong>
-
-                    </div>
-
-
-                    <div class="info-item">
-
-                        <span>
-                            Academic Session
-                        </span>
-
-                        <strong>
-                            <?php echo htmlspecialchars($session); ?>
+                            <?= htmlspecialchars($studentId); ?>
                         </strong>
 
                     </div>
@@ -303,6 +375,19 @@ $session = "2022-2023";
 
                         <strong>
                             Sylhet Engineering College
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Account Role
+                        </span>
+
+                        <strong>
+                            <?= htmlspecialchars($role); ?>
                         </strong>
 
                     </div>
@@ -357,11 +442,23 @@ $session = "2022-2023";
                         </span>
 
                         <strong>
-                            Student
+                            <?= htmlspecialchars($role); ?>
                         </strong>
 
                     </div>
 
+
+                    <div>
+
+                        <span>
+                            Account Created
+                        </span>
+
+                        <strong>
+                            <?= htmlspecialchars($accountCreated); ?>
+                        </strong>
+
+                    </div>
 
                 </div>
 
@@ -373,19 +470,19 @@ $session = "2022-2023";
 
             <div class="profile-actions">
 
-                <a href="student-dashboard.php"
-                   class="back-btn">
-
+                <a
+                    href="student-dashboard.php"
+                    class="back-btn"
+                >
                     ← Back to Dashboard
-
                 </a>
 
 
-                <a href="my-bookings.php"
-                   class="bookings-btn">
-
+                <a
+                    href="my-bookings.php"
+                    class="bookings-btn"
+                >
                     🎫 My Bookings
-
                 </a>
 
             </div>

@@ -1,20 +1,51 @@
+<?php
+
+session_start();
+
+require_once "../config/database.php";
+
+if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "driver") {
+    header("Location: ../login.php");
+    exit;
+}
+
+$driver_name = $_SESSION["name"] ?? "Driver";
+
+$sql = "
+    SELECT
+        id,
+        title,
+        message,
+        created_at
+    FROM notices
+    ORDER BY created_at DESC
+";
+
+$result = $conn->query($sql);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Notices | Driver | UniBus</title>
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet"
+          href="../css/style.css">
 
 </head>
 
 <body>
 
 <div class="driver-layout">
+
 
     <!-- SIDEBAR -->
 
@@ -46,14 +77,18 @@
                 🔄 Trip Status
             </a>
 
-            <a href="notices.php" class="active">
+            <a href="notices.php"
+               class="active">
                 📢 Notices
             </a>
 
         </nav>
 
-        <a href="../login.php" class="driver-logout">
+        <a href="../login.php"
+           class="driver-logout">
+
             ↪ Logout
+
         </a>
 
     </aside>
@@ -63,11 +98,16 @@
 
     <main class="driver-main">
 
+
+        <!-- HEADER -->
+
         <header class="driver-header">
 
             <div>
 
-                <h1>Notices</h1>
+                <h1>
+                    Notices
+                </h1>
 
                 <p>
                     Important announcements for drivers
@@ -76,7 +116,10 @@
             </div>
 
             <div class="driver-profile">
-                🧑 Driver
+
+                🧑
+                <?= htmlspecialchars($driver_name) ?>
+
             </div>
 
         </header>
@@ -85,6 +128,7 @@
         <!-- NOTICE LIST -->
 
         <section class="driver-section">
+
 
             <div class="driver-section-title">
 
@@ -102,111 +146,101 @@
             <div class="driver-notice-list">
 
 
-                <!-- OFF DAY -->
+                <?php if ($result && $result->num_rows > 0): ?>
 
-                <article class="driver-notice-item">
 
-                    <div class="notice-item-icon">
-                        📅
-                    </div>
+                    <?php while ($notice = $result->fetch_assoc()): ?>
 
-                    <div class="notice-item-content">
 
-                        <div class="notice-item-top">
+                        <article class="driver-notice-item">
+
+
+                            <div class="notice-item-icon">
+                                📢
+                            </div>
+
+
+                            <div class="notice-item-content">
+
+
+                                <div class="notice-item-top">
+
+                                    <h3>
+
+                                        <?= htmlspecialchars(
+                                            $notice["title"]
+                                        ) ?>
+
+                                    </h3>
+
+                                    <span class="notice-badge general">
+                                        Notice
+                                    </span>
+
+                                </div>
+
+
+                                <p>
+
+                                    <?= nl2br(
+                                        htmlspecialchars(
+                                            $notice["message"]
+                                        )
+                                    ) ?>
+
+                                </p>
+
+
+                                <small>
+
+                                    Date:
+
+                                    <?= date(
+                                        "d M Y, h:i A",
+                                        strtotime(
+                                            $notice["created_at"]
+                                        )
+                                    ) ?>
+
+                                </small>
+
+
+                            </div>
+
+                        </article>
+
+
+                    <?php endwhile; ?>
+
+
+                <?php else: ?>
+
+
+                    <!-- NO NOTICES -->
+
+                    <article class="driver-notice-item">
+
+                        <div class="notice-item-icon">
+                            📢
+                        </div>
+
+                        <div class="notice-item-content">
 
                             <h3>
-                                University Holiday
+                                No Notices
                             </h3>
 
-                            <span class="notice-badge holiday">
-                                Off-Day
-                            </span>
+                            <p>
+                                There are currently no announcements
+                                from the administration.
+                            </p>
 
                         </div>
 
-                        <p>
-                            University bus service will remain closed
-                            on the announced university holiday.
-                        </p>
-
-                        <small>
-                            Off-Day Date: Not assigned
-                        </small>
-
-                    </div>
-
-                </article>
+                    </article>
 
 
-                <!-- BUS UPDATE -->
-
-                <article class="driver-notice-item">
-
-                    <div class="notice-item-icon">
-                        🚌
-                    </div>
-
-                    <div class="notice-item-content">
-
-                        <div class="notice-item-top">
-
-                            <h3>
-                                Bus Service Update
-                            </h3>
-
-                            <span class="notice-badge update">
-                                Bus Update
-                            </span>
-
-                        </div>
-
-                        <p>
-                            Please check your assigned bus before
-                            starting the daily trip.
-                        </p>
-
-                        <small>
-                            Date: Not assigned
-                        </small>
-
-                    </div>
-
-                </article>
-
-
-                <!-- GENERAL NOTICE -->
-
-                <article class="driver-notice-item">
-
-                    <div class="notice-item-icon">
-                        📢
-                    </div>
-
-                    <div class="notice-item-content">
-
-                        <div class="notice-item-top">
-
-                            <h3>
-                                General Notice
-                            </h3>
-
-                            <span class="notice-badge general">
-                                General
-                            </span>
-
-                        </div>
-
-                        <p>
-                            No new general announcements at the moment.
-                        </p>
-
-                        <small>
-                            Date: Not assigned
-                        </small>
-
-                    </div>
-
-                </article>
+                <?php endif; ?>
 
 
             </div>
@@ -229,13 +263,14 @@
                 </h3>
 
                 <p>
-                    Check this page regularly for holiday,
-                    off-day and bus service announcements.
+                    Check this page regularly for important
+                    university and bus service announcements.
                 </p>
 
             </div>
 
         </section>
+
 
     </main>
 
@@ -244,3 +279,9 @@
 </body>
 
 </html>
+
+<?php
+
+$conn->close();
+
+?>

@@ -1,394 +1,668 @@
+<?php
+
+session_start();
+
+require_once "config/database.php";
+
+
+/* =====================================================
+   1. GET FILTER VALUES
+===================================================== */
+
+$selected_date = $_GET["date"] ?? date("Y-m-d", strtotime("+1 day"));
+$selected_route = $_GET["route"] ?? "";
+
+
+/* =====================================================
+   2. GET ROUTES FOR FILTER
+===================================================== */
+
+$route_sql = "
+    SELECT id, route_name
+    FROM routes
+    ORDER BY route_name ASC
+";
+
+$route_result = $conn->query($route_sql);
+
+if (!$route_result) {
+    die("Route query failed: " . $conn->error);
+}
+
+
+/* =====================================================
+   3. GET BUS SCHEDULES
+===================================================== */
+
+$sql = "
+    SELECT
+        s.id AS schedule_id,
+        s.departure_time,
+        s.arrival_time,
+        s.travel_date,
+        s.status AS schedule_status,
+
+        b.id AS bus_id,
+        b.bus_number,
+        b.bus_name,
+        b.total_seats,
+        b.status AS bus_status,
+
+        r.id AS route_id,
+        r.route_name,
+        r.start_point,
+        r.end_point
+
+    FROM schedules s
+
+    INNER JOIN buses b
+        ON s.bus_id = b.id
+
+    INNER JOIN routes r
+        ON s.route_id = r.id
+
+    WHERE s.travel_date = ?
+      AND s.status = 'scheduled'
+      AND b.status = 'active'
+";
+
+
+/* =====================================================
+   4. ADD ROUTE FILTER
+===================================================== */
+
+if (!empty($selected_route)) {
+
+    $sql .= " AND r.id = ?";
+
+}
+
+
+/* =====================================================
+   5. ORDER
+===================================================== */
+
+$sql .= "
+    ORDER BY s.departure_time ASC
+";
+
+
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    die("Schedule query failed: " . $conn->error);
+}
+
+
+/* =====================================================
+   6. BIND PARAMETERS
+===================================================== */
+
+if (!empty($selected_route)) {
+
+    $stmt->bind_param(
+        "si",
+        $selected_date,
+        $selected_route
+    );
+
+} else {
+
+    $stmt->bind_param(
+        "s",
+        $selected_date
+    );
+
+}
+
+
+/* =====================================================
+   7. EXECUTE
+===================================================== */
+
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Bus Schedule | UniBus</title>
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/schedule.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/schedule.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
 
-        <div class="logo">
-            🚌 UniBus
-        </div>
+<!-- =================================================
+     NAVBAR
+================================================= -->
 
-        <div class="nav-links">
-            <a href="index.php">Home</a>
-            <a href="about.php">About</a>
-            <a href="schedule.php" class="active">Bus Schedule</a>
-            <a href="notices.php">Notices</a>
-            <a href="contact.php">Contact</a>
-        </div>
+<nav class="navbar">
 
-        <div class="nav-buttons">
-            <a href="login.php" class="login-btn">Login</a>
-            <a href="register.php" class="register-btn">Register</a>
-        </div>
-
-    </nav>
+    <div class="logo">
+        🚌 UniBus
+    </div>
 
 
-    <!-- PAGE HEADER -->
+    <div class="nav-links">
 
-    <section class="schedule-header">
+        <a href="index.php">
+            Home
+        </a>
 
-        <span class="section-label">
-            BUS SCHEDULE
-        </span>
+        <a href="about.php">
+            About
+        </a>
 
-        <h1>
-            University Bus Schedule
-        </h1>
+        <a href="schedule.php" class="active">
+            Bus Schedule
+        </a>
 
-        <p>
-            Check bus routes, departure times, and arrival
-            information before your journey.
-        </p>
+        <a href="notices.php">
+            Notices
+        </a>
 
-    </section>
+        <a href="contact.php">
+            Contact
+        </a>
 
-
-    <!-- SEARCH / FILTER -->
-
-    <section class="schedule-section">
-
-        <div class="schedule-container">
-
-            <div class="schedule-filter">
-
-                <div class="filter-group">
-
-                    <label for="date">
-                        Select Date
-                    </label>
-
-                    <input type="date" id="date">
-
-                </div>
+    </div>
 
 
-                <div class="filter-group">
+    <div class="nav-buttons">
 
-                    <label for="route">
-                        Select Route
-                    </label>
+        <?php if (isset($_SESSION["user_id"])): ?>
 
-                    <select id="route">
+            <a
+                href="student-dashboard.php"
+                class="login-btn"
+            >
+                Dashboard
+            </a>
 
-                        <option value="">
-                            All Routes
+            <a
+                href="logout.php"
+                class="register-btn"
+            >
+                Logout
+            </a>
+
+        <?php else: ?>
+
+            <a
+                href="login.php"
+                class="login-btn"
+            >
+                Login
+            </a>
+
+            <a
+                href="register.php"
+                class="register-btn"
+            >
+                Register
+            </a>
+
+        <?php endif; ?>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =================================================
+     PAGE HEADER
+================================================= -->
+
+<section class="schedule-header">
+
+    <span class="section-label">
+        BUS SCHEDULE
+    </span>
+
+
+    <h1>
+        University Bus Schedule
+    </h1>
+
+
+    <p>
+        Check bus routes, departure times, and arrival
+        information before your journey.
+    </p>
+
+</section>
+
+
+
+<!-- =================================================
+     SCHEDULE SECTION
+================================================= -->
+
+<section class="schedule-section">
+
+    <div class="schedule-container">
+
+
+        <!-- =================================================
+             FILTER
+        ================================================= -->
+
+        <form
+            method="GET"
+            action="schedule.php"
+            class="schedule-filter"
+        >
+
+
+            <!-- DATE -->
+
+            <div class="filter-group">
+
+                <label for="date">
+                    Select Date
+                </label>
+
+                <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value="<?= htmlspecialchars($selected_date); ?>"
+                >
+
+            </div>
+
+
+
+            <!-- ROUTE -->
+
+            <div class="filter-group">
+
+                <label for="route">
+                    Select Route
+                </label>
+
+
+                <select
+                    id="route"
+                    name="route"
+                >
+
+                    <option value="">
+                        All Routes
+                    </option>
+
+
+                    <?php while ($route = $route_result->fetch_assoc()): ?>
+
+                        <option
+                            value="<?= $route["id"]; ?>"
+                            <?= (
+                                $selected_route == $route["id"]
+                            ) ? "selected" : ""; ?>
+                        >
+
+                            <?= htmlspecialchars(
+                                $route["route_name"]
+                            ); ?>
+
                         </option>
 
-                        <option>
-                            Campus Route A
-                        </option>
+                    <?php endwhile; ?>
 
-                        <option>
-                            Campus Route B
-                        </option>
-
-                        <option>
-                            Campus Route C
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <button class="filter-btn">
-                    Search Schedule
-                </button>
+                </select>
 
             </div>
 
 
-            <!-- SCHEDULE CARDS -->
 
-            <div class="schedule-list">
+            <!-- SEARCH -->
+
+            <button
+                class="filter-btn"
+                type="submit"
+            >
+                Search Schedule
+            </button>
 
 
-                <!-- BUS 1 -->
+        </form>
 
-                <div class="schedule-card">
 
-                    <div class="bus-info">
 
-                        <div class="bus-icon">
-                            🚌
-                        </div>
+        <!-- =================================================
+             SCHEDULE LIST
+        ================================================= -->
 
-                        <div>
+        <div class="schedule-list">
 
-                            <h3>
-                                BUS-01
-                            </h3>
 
-                            <p>
-                                Campus Route A
-                            </p>
+            <?php if ($result->num_rows === 0): ?>
 
-                        </div>
 
+                <!-- NO BUS AVAILABLE -->
+
+                <div class="no-bus">
+
+                    <div class="no-bus-icon">
+                        🚌
                     </div>
 
 
-                    <div class="route-info">
-
-                        <div>
-
-                            <span>
-                                Departure
-                            </span>
-
-                            <strong>
-                                08:00 AM
-                            </strong>
-
-                        </div>
-
-                        <div class="route-arrow">
-                            →
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Arrival
-                            </span>
-
-                            <strong>
-                                09:00 AM
-                            </strong>
-
-                        </div>
-
-                    </div>
+                    <h2>
+                        No Bus Available
+                    </h2>
 
 
-                    <div class="schedule-action">
+                    <p>
 
-                        <span class="available">
-                            ● Available
-                        </span>
+                        There are no buses scheduled for
 
-                        <a href="login.php" class="book-btn">
-                            Book Seat
-                        </a>
+                        <strong>
+                            <?= htmlspecialchars(
+                                date(
+                                    "M d, Y",
+                                    strtotime($selected_date)
+                                )
+                            ); ?>
+                        </strong>.
 
-                    </div>
+                    </p>
+
+
+                    <a
+                        href="schedule.php"
+                        class="book-btn"
+                    >
+                        View Other Dates
+                    </a>
 
                 </div>
 
 
-                <!-- BUS 2 -->
+            <?php else: ?>
 
-                <div class="schedule-card">
 
-                    <div class="bus-info">
+                <!-- =================================================
+                     DATABASE SCHEDULES
+                ================================================= -->
 
-                        <div class="bus-icon">
-                            🚌
+
+                <?php while ($schedule = $result->fetch_assoc()): ?>
+
+
+                    <div class="schedule-card">
+
+
+                        <!-- BUS INFORMATION -->
+
+                        <div class="bus-info">
+
+
+                            <div class="bus-icon">
+                                🚌
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+
+                                    <?= htmlspecialchars(
+                                        $schedule["bus_number"]
+                                    ); ?>
+
+                                </h3>
+
+
+                                <p>
+
+                                    <?= htmlspecialchars(
+                                        $schedule["route_name"]
+                                    ); ?>
+
+                                </p>
+
+                            </div>
+
                         </div>
 
-                        <div>
 
-                            <h3>
-                                BUS-02
-                            </h3>
 
-                            <p>
-                                Campus Route B
-                            </p>
+                        <!-- ROUTE / TIME -->
+
+                        <div class="route-info">
+
+
+                            <div>
+
+                                <span>
+                                    Departure
+                                </span>
+
+
+                                <strong>
+
+                                    <?= date(
+                                        "h:i A",
+                                        strtotime(
+                                            $schedule["departure_time"]
+                                        )
+                                    ); ?>
+
+                                </strong>
+
+                            </div>
+
+
+
+                            <div class="route-arrow">
+                                →
+                            </div>
+
+
+
+                            <div>
+
+                                <span>
+                                    Arrival
+                                </span>
+
+
+                                <strong>
+
+                                    <?= date(
+                                        "h:i A",
+                                        strtotime(
+                                            $schedule["arrival_time"]
+                                        )
+                                    ); ?>
+
+                                </strong>
+
+                            </div>
 
                         </div>
 
-                    </div>
 
 
-                    <div class="route-info">
+                        <!-- ACTION -->
 
-                        <div>
+                        <div class="schedule-action">
 
-                            <span>
-                                Departure
+
+                            <span class="available">
+                                ● Available
                             </span>
 
-                            <strong>
-                                09:00 AM
-                            </strong>
+
+                            <?php if (isset($_SESSION["user_id"])): ?>
+
+
+                                <a
+                                    href="seat-booking.php?schedule_id=<?= $schedule["schedule_id"]; ?>"
+                                    class="book-btn"
+                                >
+                                    Book Seat
+                                </a>
+
+
+                            <?php else: ?>
+
+
+                                <a
+                                    href="login.php"
+                                    class="book-btn"
+                                >
+                                    Login to Book
+                                </a>
+
+
+                            <?php endif; ?>
+
 
                         </div>
 
-                        <div class="route-arrow">
-                            →
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Arrival
-                            </span>
-
-                            <strong>
-                                10:00 AM
-                            </strong>
-
-                        </div>
 
                     </div>
 
 
-                    <div class="schedule-action">
-
-                        <span class="available">
-                            ● Available
-                        </span>
-
-                        <a href="login.php" class="book-btn">
-                            Book Seat
-                        </a>
-
-                    </div>
-
-                </div>
+                <?php endwhile; ?>
 
 
-                <!-- BUS 3 -->
+            <?php endif; ?>
 
-                <div class="schedule-card">
-
-                    <div class="bus-info">
-
-                        <div class="bus-icon">
-                            🚌
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                BUS-03
-                            </h3>
-
-                            <p>
-                                Campus Route C
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="route-info">
-
-                        <div>
-
-                            <span>
-                                Departure
-                            </span>
-
-                            <strong>
-                                04:00 PM
-                            </strong>
-
-                        </div>
-
-                        <div class="route-arrow">
-                            →
-                        </div>
-
-                        <div>
-
-                            <span>
-                                Arrival
-                            </span>
-
-                            <strong>
-                                05:00 PM
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="schedule-action">
-
-                        <span class="available">
-                            ● Available
-                        </span>
-
-                        <a href="login.php" class="book-btn">
-                            Book Seat
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
 
         </div>
 
-    </section>
+    </div>
+
+</section>
 
 
-    <!-- FOOTER -->
 
-    <footer class="footer">
+<!-- =================================================
+     FOOTER
+================================================= -->
 
-        <div class="footer-content">
+<footer class="footer">
 
-            <div>
-
-                <h3>🚌 UniBus</h3>
-
-                <p>
-                    University Bus Booking and Management System
-                </p>
-
-            </div>
+    <div class="footer-content">
 
 
-            <div>
+        <div>
 
-                <h3>Quick Links</h3>
+            <h3>
+                🚌 UniBus
+            </h3>
 
-                <a href="index.php">Home</a>
-                <a href="about.php">About</a>
-                <a href="schedule.php">Bus Schedule</a>
-                <a href="notices.php">Notices</a>
-
-            </div>
-
-
-            <div>
-
-                <h3>Contact Info</h3>
-
-                <p>📞 +880 1712-345678</p>
-                <p>✉ info@unibus.sec.edu.bd</p>
-                <p>📍 Sylhet Engineering College</p>
-
-            </div>
+            <p>
+                University Bus Booking and Management System
+            </p>
 
         </div>
 
 
-        <div class="footer-bottom">
-            © 2026 UniBus. All rights reserved.
+
+        <div>
+
+            <h3>
+                Quick Links
+            </h3>
+
+
+            <a href="index.php">
+                Home
+            </a>
+
+
+            <a href="about.php">
+                About
+            </a>
+
+
+            <a href="schedule.php">
+                Bus Schedule
+            </a>
+
+
+            <a href="notices.php">
+                Notices
+            </a>
+
         </div>
 
-    </footer>
+
+
+        <div>
+
+            <h3>
+                Contact Info
+            </h3>
+
+
+            <p>
+                📞 +880 1712-345678
+            </p>
+
+
+            <p>
+                ✉ info@unibus.sec.edu.bd
+            </p>
+
+
+            <p>
+                📍 Sylhet Engineering College
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="footer-bottom">
+
+        © 2026 UniBus. All rights reserved.
+
+    </div>
+
+</footer>
+
 
 </body>
 
 </html>
+
+
+<?php
+
+$stmt->close();
+
+$conn->close();
+
+?>
