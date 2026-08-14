@@ -1,0 +1,295 @@
+/* =========================
+   PROFILE PAGE
+========================= */
+
+.profile-header {
+    background: linear-gradient(135deg, #eaf4ff, #f0fbfa);
+
+    text-align: center;
+
+    padding: 60px 20px;
+}
+
+.profile-header h1 {
+    color: #172033;
+
+    font-size: 40px;
+
+    margin: 10px 0;
+}
+
+.profile-header p {
+    color: #667085;
+
+    margin: 0;
+}
+
+
+/* MAIN */
+
+.profile-section {
+    background: #f7f9fc;
+
+    padding: 55px 20px;
+}
+
+.profile-container {
+    max-width: 950px;
+
+    margin: auto;
+}
+
+
+/* PROFILE CARD */
+
+.profile-card {
+    background: white;
+
+    border: 1px solid #e2e7ee;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+}
+
+
+/* PROFILE TOP */
+
+.profile-top {
+    background: #1769e0;
+
+    padding: 35px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    color: white;
+}
+
+.profile-avatar {
+    width: 85px;
+
+    height: 85px;
+
+    min-width: 85px;
+
+    background: white;
+
+    color: #1769e0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 38px;
+}
+
+.profile-name h2 {
+    margin: 0 0 7px;
+
+    font-size: 25px;
+}
+
+.profile-name p {
+    margin: 0 0 12px;
+
+    font-size: 12px;
+
+    opacity: 0.85;
+}
+
+.student-status {
+    display: inline-block;
+
+    background: #e9f8ef;
+
+    color: #16834b;
+
+    padding: 5px 10px;
+
+    border-radius: 15px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+/* PROFILE BLOCK */
+
+.profile-block {
+    padding: 28px 35px;
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+.block-heading {
+    margin-bottom: 22px;
+}
+
+.block-heading h2 {
+    color: #172033;
+
+    font-size: 19px;
+
+    margin: 0 0 5px;
+}
+
+.block-heading p {
+    color: #98a2b3;
+
+    font-size: 11px;
+
+    margin: 0;
+}
+
+
+/* INFORMATION */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 22px;
+}
+
+.info-item {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.info-item span {
+    color: #98a2b3;
+
+    font-size: 11px;
+}
+
+.info-item strong {
+    color: #172033;
+
+    font-size: 13px;
+}
+
+
+/* ACCOUNT */
+
+.account-row {
+    display: flex;
+
+    gap: 80px;
+}
+
+.account-row div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.account-row span {
+    color: #98a2b3;
+
+    font-size: 11px;
+}
+
+.account-row strong {
+    color: #172033;
+
+    font-size: 13px;
+}
+
+.active-account {
+    color: #16834b !important;
+}
+
+
+/* ACTIONS */
+
+.profile-actions {
+    padding: 25px 35px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+}
+
+.back-btn,
+.bookings-btn {
+    text-decoration: none;
+
+    padding: 11px 17px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.back-btn {
+    color: #667085;
+
+    border: 1px solid #dfe5ec;
+
+    background: white;
+}
+
+.bookings-btn {
+    color: white;
+
+    background: #1769e0;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+
+    .profile-top {
+        padding: 25px;
+
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+    .profile-block {
+        padding: 25px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .account-row {
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .profile-actions {
+        padding: 20px 25px;
+
+        flex-direction: column;
+    }
+
+    .back-btn,
+    .bookings-btn {
+        text-align: center;
+    }
+
+}

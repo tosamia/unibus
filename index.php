@@ -7,6 +7,7 @@
     <title>UniBus - University Bus Booking System</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <a href="about.php">
 </head>
 
 <body>
@@ -20,12 +21,12 @@
 
         <ul class="nav-links">
             <li><a href="index.php">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Bus Schedule</a></li>
-            <li><a href="#">Notices</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="about.php">About</a></li>
+            <li><a href="schedule">Bus Schedule</a></li>
+            <li><a href="notices">Notices</a></li>
+            <li><a href="contact">Contact</a></li>
             <li><a href="#" class="login-btn">Login</a></li>
-            <li><a href="#" class="register-btn">Register</a></li>
+            <li><a href="register.php" class="register-btn">Register</a></li>
         </ul>
 
     </nav>
