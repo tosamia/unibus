@@ -2,170 +2,241 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login | UniBus</title>
 
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/auth.css">
+
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+<div class="auth-container">
 
-        <div class="logo">
+    <div class="auth-card">
+
+        <!-- LOGO -->
+
+        <div class="auth-logo">
             🚌 UniBus
         </div>
 
-        <div class="nav-links">
-            <a href="index.php">Home</a>
-            <a href="about.php">About</a>
-            <a href="schedule.php">Bus Schedule</a>
-            <a href="notices.php">Notices</a>
-            <a href="contact.php">Contact</a>
-        </div>
 
-        <div class="nav-buttons">
-            <a href="login.php" class="login-btn">Login</a>
-            <a href="register.php" class="register-btn">Register</a>
-        </div>
+        <h1>Welcome Back</h1>
 
-    </nav>
+        <p class="auth-subtitle">
+            Sign in to your UniBus account
+        </p>
 
 
-    <!-- LOGIN SECTION -->
+        <form action="#" method="POST">
 
-    <section class="auth-section">
+            <!-- ROLE -->
 
-        <div class="auth-card">
+            <label>
+                Login As
+            </label>
 
-            <div class="auth-icon">
-                🚌
+            <div class="role-options">
+
+                <!-- STUDENT -->
+
+                <label class="role-option">
+
+                    <input
+                        type="radio"
+                        name="role"
+                        value="student"
+                        checked
+                        onchange="updateRegister()"
+                    >
+
+                    <span>
+                        👨‍🎓 Student
+                    </span>
+
+                </label>
+
+
+                <!-- DRIVER -->
+
+                <label class="role-option">
+
+                    <input
+                        type="radio"
+                        name="role"
+                        value="driver"
+                        onchange="updateRegister()"
+                    >
+
+                    <span>
+                        🧑 Driver
+                    </span>
+
+                </label>
+
+
+                <!-- ADMIN -->
+
+                <label class="role-option">
+
+                    <input
+                        type="radio"
+                        name="role"
+                        value="admin"
+                        onchange="updateRegister()"
+                    >
+
+                    <span>
+                        👨‍💼 Admin
+                    </span>
+
+                </label>
+
             </div>
 
-            <h1>Welcome Back!</h1>
 
-            <p class="auth-subtitle">
-                Login to your UniBus account
-            </p>
+            <!-- EMAIL -->
 
+            <label for="email">
+                Email
+            </label>
 
-            <form>
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email Address
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="Enter your email"
-                        required
-                    >
-
-                </div>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
 
 
-                <div class="form-group">
+            <!-- PASSWORD -->
 
-                    <label for="password">
-                        Password
-                    </label>
+            <label for="password">
+                Password
+            </label>
 
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Enter your password"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="login-options">
-
-                    <label>
-                        <input type="checkbox">
-                        Remember me
-                    </label>
-
-                    <a href="#">
-                        Forgot Password?
-                    </a>
-
-                </div>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+            >
 
 
-                <button type="submit" class="auth-submit">
-                    Login
-                </button>
+            <!-- LOGIN -->
 
-            </form>
+            <button
+                type="submit"
+                class="auth-button"
+            >
+                Login
+            </button>
+
+        </form>
 
 
-            <p class="auth-footer">
+        <!-- REGISTER AREA -->
 
+        <div
+            class="register-area"
+            id="registerArea"
+        >
+
+            <p>
                 Don't have an account?
-
-                <a href="register.php">
-                    Register Now
-                </a>
-
             </p>
 
-        </div>
-
-    </section>
-
-
-    <!-- FOOTER -->
-
-    <footer class="footer">
-
-        <div class="footer-content">
-
-            <div>
-                <h3>🚌 UniBus</h3>
-
-                <p>
-                    University Bus Booking and Management System
-                </p>
-            </div>
-
-
-            <div>
-                <h3>Quick Links</h3>
-
-                <a href="index.php">Home</a>
-                <a href="about.php">About</a>
-                <a href="schedule.php">Bus Schedule</a>
-                <a href="notices.php">Notices</a>
-            </div>
-
-
-            <div>
-                <h3>Contact Info</h3>
-
-                <p>📞 +880 1712-345678</p>
-                <p>✉ info@unibus.sec.edu.bd</p>
-                <p>📍 Sylhet Engineering College</p>
-            </div>
+            <a
+                href="registerr.php"
+                id="registerLink"
+            >
+                Register as Student
+            </a>
 
         </div>
 
 
-        <div class="footer-bottom">
+        <!-- BACK -->
 
-            © 2026 UniBus. All rights reserved.
+        <a
+            href="index.php"
+            class="back-link"
+        >
+            ← Back to Home
+        </a>
 
-        </div>
+    </div>
 
-    </footer>
+</div>
+
+
+<script>
+
+function updateRegister() {
+
+    const selectedRole =
+        document.querySelector(
+            'input[name="role"]:checked'
+        ).value;
+
+    const registerArea =
+        document.getElementById(
+            "registerArea"
+        );
+
+    const registerLink =
+        document.getElementById(
+            "registerLink"
+        );
+
+
+    // STUDENT
+
+    if (selectedRole === "student") {
+
+        registerArea.style.display = "block";
+
+        registerLink.href =
+            "register.php";
+
+        registerLink.textContent =
+            "Register as Student";
+
+    }
+
+
+    // DRIVER
+
+    else if (selectedRole === "driver") {
+
+        registerArea.style.display = "block";
+
+        registerLink.href =
+            "driver/register.php";
+
+        registerLink.textContent =
+            "Register as Driver";
+
+    }
+
+
+    // ADMIN
+
+    else if (selectedRole === "admin") {
+
+        registerArea.style.display = "none";
+
+    }
+
+}
+
+</script>
 
 </body>
 
