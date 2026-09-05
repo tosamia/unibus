@@ -1,0 +1,360 @@
+/* =========================
+   SEAT BOOKING PAGE
+========================= */
+
+.booking-header {
+    background: linear-gradient(135deg, #eaf4ff, #f0fbfa);
+    text-align: center;
+    padding: 65px 20px;
+}
+
+.booking-header h1 {
+    color: #172033;
+    font-size: 42px;
+    margin: 0 0 12px;
+}
+
+.booking-header p {
+    color: #667085;
+    margin: 0;
+}
+
+
+/* MAIN SECTION */
+
+.seat-section {
+    background: #f7f9fc;
+    padding: 60px 20px;
+}
+
+.seat-container {
+    max-width: 1050px;
+    margin: auto;
+}
+
+
+/* BUS SUMMARY */
+
+.bus-summary {
+    background: white;
+    border: 1px solid #e3e8ef;
+    border-radius: 14px;
+    padding: 22px 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.bus-summary h2 {
+    margin: 0 0 5px;
+    color: #172033;
+}
+
+.bus-summary p {
+    margin: 0;
+    color: #667085;
+}
+
+.trip-info {
+    display: flex;
+    gap: 25px;
+
+    color: #667085;
+    font-size: 14px;
+}
+
+
+/* LAYOUT */
+
+.booking-layout {
+    display: grid;
+
+    grid-template-columns: 1.4fr 0.8fr;
+
+    gap: 25px;
+
+    align-items: start;
+}
+
+
+/* SEAT CARD */
+
+.seat-card {
+    background: white;
+
+    border: 1px solid #e3e8ef;
+
+    border-radius: 15px;
+
+    padding: 35px;
+}
+
+.bus-front {
+    width: 150px;
+
+    margin: 0 auto 30px;
+
+    padding: 12px;
+
+    text-align: center;
+
+    background: #172033;
+
+    color: white;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* SEATS */
+
+.seat-layout {
+    max-width: 330px;
+
+    margin: auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.seat-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr 35px 1fr 1fr;
+
+    gap: 10px;
+}
+
+.aisle {
+    width: 35px;
+}
+
+.seat {
+    height: 50px;
+
+    border-radius: 8px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    border: 2px solid transparent;
+}
+
+
+/* AVAILABLE */
+
+.available-seat {
+    background: #e9f8ef;
+
+    color: #16834b;
+
+    border-color: #b9e8ca;
+}
+
+
+/* BOOKED */
+
+.booked-seat {
+    background: #f1f2f4;
+
+    color: #98a2b3;
+
+    border-color: #e0e2e5;
+
+    cursor: not-allowed;
+}
+
+
+/* SELECTED */
+
+.selected-seat-button {
+    background: #1769e0;
+
+    color: white;
+
+    border-color: #0f5bc7;
+}
+
+
+/* BOOKING SUMMARY */
+
+.booking-summary {
+    background: white;
+
+    border: 1px solid #e3e8ef;
+
+    border-radius: 15px;
+
+    padding: 28px;
+}
+
+.booking-summary h2 {
+    color: #172033;
+
+    font-size: 21px;
+
+    margin-top: 0;
+
+    margin-bottom: 25px;
+}
+
+.summary-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+.summary-item span {
+    color: #667085;
+
+    font-size: 13px;
+}
+
+.summary-item strong {
+    color: #172033;
+
+    font-size: 13px;
+
+    text-align: right;
+}
+
+
+/* SELECTED SEAT */
+
+.selected-seat {
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: #eaf2ff;
+
+    border-radius: 9px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #1769e0;
+}
+
+.selected-seat strong {
+    font-size: 16px;
+}
+
+
+/* CONFIRM */
+
+.confirm-btn {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #1769e0;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background: #0f5bc7;
+}
+
+
+/* LEGEND */
+
+.seat-legend {
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 30px;
+
+    color: #667085;
+
+    font-size: 13px;
+}
+
+.seat-legend div {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.legend-box {
+    width: 15px;
+    height: 15px;
+
+    border-radius: 4px;
+
+    display: inline-block;
+}
+
+.available-box {
+    background: #e9f8ef;
+    border: 1px solid #b9e8ca;
+}
+
+.selected-box {
+    background: #1769e0;
+}
+
+.booked-box {
+    background: #f1f2f4;
+    border: 1px solid #e0e2e5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+
+    .booking-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .bus-summary {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+    .trip-info {
+        flex-direction: column;
+
+        gap: 7px;
+    }
+}
