@@ -5,6 +5,8 @@
 
 🚍 **Live Website:** https://unibus-sec.infinityfreeapp.com/
 
+![UniBus Preview](UNIBUS.jpg)
+
 > **Book Early. Ride Comfortably.**
 
 UniBus is a web-based University Bus Booking and Management System designed to make university transportation easier, more organized, and more convenient for students.
